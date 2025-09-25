@@ -31,21 +31,21 @@ python manage.py runserver
 ```
 
 ## Usage
-- Search for papers: Enter keywords in the search bar to fetch research papers from arXiv. Results include paper title, authors, publication date, DOI, summary, and PDF link.
-- Upload your document: Upload PDF or DOCX files to extract paragraphs and generate recommended citations.
+- Search for papers: Enter keywords in the search bar to fetch research papers from `arXiv`. Results include paper title, authors, publication date, DOI, summary, and PDF link.
+- Upload your document: Upload `PDF` or `DOCX` files to extract paragraphs and generate recommended citations.
 - View citations: Each paragraph displays the top 3 recommended citations with relevance percentages.
-- Export citations: Download citations in CSV, JSON, BibTeX, or PDF formats. Citation style can be customized in settings.
+- Export citations: Download citations in `CSV`, `JSON`, `BibTeX`, or `PDF` formats. Citation style can be customized in settings.
 
 ## Features
-- Search and fetch research papers from arXiv.
+- Search and fetch research papers from `arXiv`.
 - Results ranked by publication date and relevance.
-- Upload PDF/DOCX documents and extract text automatically.
-- Clean and preprocess text using spaCy.
+- Upload `PDF`/`DOCX` documents and extract text automatically.
+- Clean and preprocess text using `spaCy`.
 - Generate keywords and paragraph summaries via LLM.
-- Query arXiv API for relevant papers using extracted keywords and summaries.
-- Rank results using semantic similarity (SBERT).
+- Query `arXiv` API for relevant papers using extracted keywords and summaries.
+- Rank results using semantic similarity (`SBERT`).
 - Map top 3 recommended citations to each paragraph with relevance scores.
-- Export citations in multiple formats (CSV, JSON, BibTeX, PDF).
+- Export citations in multiple formats (`CSV`, `JSON`, `BibTeX`, `PDF`).
 - Configure default citation style and export type in user settings.
 
 ## License
@@ -55,5 +55,5 @@ This project is licensed under the MIT License. See `LICENSE` for details.
 - The suggested citations are recommendations; please verify for accuracy before using.
 - The LLM used is NVIDIA Nemotron Nano 9B V2, accessed via OpenRouter.
 - LLM API usage may be rate-limited. Errors related to API limits may appear when generating citations.
-- PDF/DOCX upload processing may take a few seconds depending on document length.
-- Current Main_webUI is ver10 from archive
+- `PDF`/`DOCX` upload processing may take a few seconds depending on document length.
+- Current Main_webUI is ver10 from `archive/`
