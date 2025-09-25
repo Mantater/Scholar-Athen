@@ -1,0 +1,13 @@
+{% extends "papers/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="error-container">
+        <h2>Error Occurred</h2>
+        <p>{{ error_message }}</p>
+        <p class="error-note">Please review the message and try again. If the issue persists, contact support.</p>
+        <a class="read-more" href="{% url 'upload' %}">Go back to Upload</a>
+    </div>
+</div>
+{% endblock %}

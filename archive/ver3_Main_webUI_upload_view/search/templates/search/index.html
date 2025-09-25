@@ -1,0 +1,73 @@
+{% extends "papers/base.html" %}
+{% block content %}
+
+<!-- Search Form -->
+<form method="get" class="search-form">
+    <div class="search-container">
+        <input type="text" name="query" value="{{ query }}" placeholder="Search for papers..." class="search-input"/>
+        <button type="submit" class="search-button">Search</button>
+    </div>
+</form>
+
+{% if papers %}
+    {% for paper in papers %}
+        <div class="paper">
+            <h3>{{ forloop.counter0|add:start_index|add:"1" }}. {{ paper.title }}</h3>
+            <div class="authors">{{ paper.authors|join:", " }}</div>
+            <div class="date">Published: {{ paper.published }}</div>
+            {% if paper.doi %}
+            <div class="doi">(DOI: {{ paper.doi }})</div>
+            {% endif %}
+            <div class="summary-container">
+                <span class="summary-text" id="summary-{{ forloop.counter }}">
+                    {{ paper.summary|truncatechars:300 }}
+                    {% if paper.summary|length > 300 %}
+                    <span class="more-text" style="display:none;">{{ paper.summary|slice:"300:" }}</span>
+                    {% endif %}
+                </span>
+                {% if paper.summary|length > 300 %}
+                <a href="javascript:void(0);" class="read-more" onclick="toggleSummary('{{ forloop.counter }}');">Read more</a>
+                {% endif %}
+            </div>
+            <div class="pdf"><a href="{{ paper.pdf_url }}" target="_blank">📄 Read PDF</a></div>
+        </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="?query={{ query }}&page={{ page|add:"-1" }}" class="arrow">&#x276E; Previous</a>
+        {% else %}
+        <span class="arrow-disabled">&#x276E; Previous</span>
+        {% endif %}
+
+        <span class="page-info">Page {{ page }} of {{ max_page }}</span>
+
+        {% if page < max_page %}
+        <a href="?query={{ query }}&page={{ page|add:"1" }}" class="arrow">Next &#x276F;</a>
+        {% else %}
+        <span class="arrow-disabled">Next &#x276F;</span>
+        {% endif %}
+    </div>
+
+{% elif query %}
+    <p class="no-results">No results found for "{{ query }}"</p>
+{% endif %}
+
+<script>
+function toggleSummary(id) {
+    const summary = document.getElementById('summary-' + id);
+    const moreText = summary.querySelector('.more-text');
+    const link = summary.nextElementSibling;
+
+    if (moreText.style.display === 'none') {
+        moreText.style.display = 'inline';
+        link.textContent = 'Read less';
+    } else {
+        moreText.style.display = 'none';
+        link.textContent = 'Read more';
+    }
+}
+</script>
+
+{% endblock %}

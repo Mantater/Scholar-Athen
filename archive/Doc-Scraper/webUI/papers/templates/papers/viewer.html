@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Paper</title>
+    <link rel="stylesheet" href="{% static 'papers/css/style.css' %}">
+</head>
+<body>
+    <div class="header-band">
+        <h1 class="header-title">Scholar Athen</h1>
+    </div>
+
+    <h2>{{ paper.title }}</h2>
+    <div class="authors">{{ paper.authors }}</div>
+    <div class="date">{{ paper.uploaded_at }}</div>
+    <div class="pdf"><a href="{{ paper.file.url }}">Download PDF</a></div>
+
+    <h3>Citations</h3>
+    {% for c in citations %}
+    <div class="paper">
+        <h3>{{ c.title }}</h3>
+        <div class="authors">{{ c.authors }}</div>
+        <div class="date">{{ c.year }}</div>
+        <div class="summary-container">{{ c.relevance }}</div>
+        <div class="pdf"><a href="{{ c.link }}">View Link</a></div>
+    </div>
+    {% empty %}
+    <p>No citations yet.</p>
+    {% endfor %}
+
+    <div class="pagination">
+        <a class="arrow arrow-disabled">&lt; Prev</a>
+        <span class="page-info">Page 1 of 1</span>
+        <a class="arrow">Next &gt;</a>
+    </div>
+</body>
+</html>

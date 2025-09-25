@@ -1,0 +1,19 @@
+{% extends "papers/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="error-container">
+        <h2>Error Occurred</h2>
+        <p>
+            {% if error_message %}
+                {{ error_message }}
+            {% else %}
+                The request could not be completed because the LLM API limit has been reached.
+                Please try again later.
+            {% endif %}
+        </p>
+        <a class="read-more" href="{% url 'dashboard' %}">Go back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

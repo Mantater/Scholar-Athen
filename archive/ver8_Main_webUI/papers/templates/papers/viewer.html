@@ -1,0 +1,136 @@
+{% extends "papers/base.html" %}
+
+{% block content %}
+
+<!-- Replace the test styling with proper borders -->
+<style>
+.paragraph-section {
+    border: 3px solid #1E3A8A !important;
+    background: #f2f2f2 !important;
+    margin: 20px 0 !important;
+    padding: 0px 20px 20px 20px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.paragraph-section h4 {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 18px !important;
+    color: #1E3A8A !important;
+    font-weight: bold !important;
+    margin-bottom: 15px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid #fff !important;
+}
+
+.citation-count {
+    font-size: 15px !important;
+    display: inline-block !important;
+    min-width: 35px !important;
+    height: 35px !important;
+    line-height: 35px !important;
+    border-radius: 8px !important;
+    border: 2px solid #1E3A8A !important;
+    text-align: center !important;
+    font-weight: bold !important;
+    background-color: #fff !important;
+    color: #1E3A8A !important;
+    padding: 0 8px !important;
+}
+
+.paragraph-text {
+    font-size: 15px !important;
+    margin-bottom: 20px !important;
+    color: #333 !important;
+    line-height: 1.6 !important;
+    background: #f8f9fa !important;
+    padding: 15px !important;
+    border-left: 4px solid #1E3A8A !important;
+    border-radius: 4px !important;
+}
+
+.citations {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+.citation {
+    padding: 12px 16px !important;
+    border-left: 4px solid #1E3A8A !important;
+    border-radius: 8px !important;
+    background-color: #fefefe !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+}
+
+.citation h3 {
+    margin: 0 0 8px 0 !important;
+    font-size: 18px !important;
+    color: #1E3A8A !important;
+    font-weight: bold !important;
+}
+
+.citation .pdf a {
+    color: #2563EB !important;
+    font-weight: 300 !important;
+    text-decoration: none !important;
+    padding: 3px 10px !important;
+    border: 2px solid #2563EB !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+}
+
+.citation .pdf a:hover {
+    background: #2563EB !important;
+    color: white !important;
+}
+</style>
+
+{% if error_message %}
+<div class="error-container">
+    <h2>Error Occurred</h2>
+    <p>{{ error_message }}</p>
+    <p class="error-note">Please review the message and try again.</p>
+    <a class="read-more" href="{% url 'dashboard' %}">Go back to Upload</a>
+</div>
+{% else %}
+
+<h2>{{ paper.file.name|cut:"uploads/" }}</h2>
+<div class="date">Uploaded at: {{ paper.uploaded_at }}</div>
+<div class="export-button">
+    <form method="get" action="{% url 'viewer_detail' paper.id %}">
+        <button type="submit" name="export" value="{{ settings.export_type|default:'csv' }}">
+            Download {{ settings.export_type|upper|default:'CSV' }}
+        </button>
+    </form>
+</div>
+
+{% for paragraph in paragraphs %}
+<div class="paragraph-section">
+    <h4>
+        <span>Paragraph {{ paragraph.number }}</span>
+        <span class="citation-count">Num of citations: {{ paragraph.count }}</span>
+    </h4>
+    <p class="paragraph-text">"{{ paragraph.text }}"</p>
+
+    <div class="citations">
+        {% for c in paragraph.citations %}
+        <div class="paper citation">
+            <h3>{{ c.title }}</h3>
+            <div class="authors">{{ c.authors }}</div>
+            <div class="date">{{ c.year }}</div>
+            <div class="summary-container">Relevance Score: {{ c.relevance|floatformat:0 }}%</div>
+            <div class="pdf"><a href="{{ c.link }}">View Paper</a></div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% empty %}
+<p>No paragraphs or citations available.</p>
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

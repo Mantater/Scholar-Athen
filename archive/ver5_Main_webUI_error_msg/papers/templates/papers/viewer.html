@@ -1,0 +1,31 @@
+{% extends "papers/base.html" %}
+
+{% block content %}
+
+{% if error_message %}
+<div class="error-container">
+    <h2>Error Occurred</h2>
+    <p>{{ error_message }}</p>
+    <p class="error-note">Please review the message and try again.</p>
+    <a class="read-more" href="{% url 'dashboard' %}">Go back to Upload</a>
+</div>
+{% else %}
+<h2>{{ paper.file.name|cut:"uploads/" }}</h2>
+<div class="date">Uploaded at: {{ paper.uploaded_at }}</div>
+<div class="pdf"><a href="{{ paper.file.url }}">Download PDF</a></div>
+
+<h3>Citations</h3>
+{% for c in citations %}
+<div class="paper">
+    <h3>{{ c.title }}</h3>
+    <div class="authors">{{ c.authors }}</div>
+    <div class="date">{{ c.year }}</div>
+    <div class="summary-container">{{ c.relevance }}</div>
+    <div class="pdf"><a href="{{ c.link }}">View Link</a></div>
+</div>
+{% empty %}
+<p>No citations yet.</p>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

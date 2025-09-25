@@ -1,0 +1,229 @@
+{% extends "papers/base.html" %}
+
+{% block content %}
+<div class="loading-content" style="text-align: center; margin-top: 100px;">
+  <h2>Processing "{{ paper.file.name|cut:"uploads/" }}"...</h2>
+  <p>Please wait while we generate citations.</p>
+  <div class="spinner"></div>
+  <div class="loading-info">
+    <small>This may take a few minutes. Please don't close this window.</small>
+  </div>
+</div>
+
+<script>
+  // Lock navigation - prevent back/forward buttons
+  history.pushState(null, null, location.href);
+  window.onpopstate = function () {
+    history.go(1);
+  };
+
+  // Prevent page refresh
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  });
+
+  let pollCount = 0;
+  const maxPollAttempts = 100; // 5 minutes max (100 * 3 seconds)
+  let isProcessingComplete = false;
+
+  // Poll every 3 seconds to check if processing is done
+  const pollInterval = setInterval(function() {
+    if (isProcessingComplete) {
+      return; // Don't poll if already processing redirect
+    }
+
+    pollCount++;
+    
+    // Stop polling after max attempts to prevent infinite loops
+    if (pollCount > maxPollAttempts) {
+      clearInterval(pollInterval);
+      isProcessingComplete = true;
+      window.location.href = "{% url 'dashboard' %}?error=" + encodeURIComponent("Processing timed out. Please try again.");
+      return;
+    }
+
+    fetch("{% url 'loading_page' paper.id %}", { method: "HEAD" })
+      .then(response => {
+        if (response.redirected) {
+          // Processing is complete, redirect to viewer
+          clearInterval(pollInterval);
+          isProcessingComplete = true;
+          window.location.href = response.url;
+        } else if (response.status === 404) {
+          // Paper was deleted due to processing failure
+          clearInterval(pollInterval);
+          isProcessingComplete = true;
+          window.location.href = "{% url 'dashboard' %}?error=" + encodeURIComponent("Paper processing failed and has been removed.");
+        } else if (response.status >= 500) {
+          // Server error
+          clearInterval(pollInterval);
+          isProcessingComplete = true;
+          window.location.href = "{% url 'dashboard' %}?error=" + encodeURIComponent("Server error occurred during processing.");
+        }
+        // If status is 200, keep polling (still processing)
+      })
+      .catch(error => {
+        console.error('Polling error:', error);
+        clearInterval(pollInterval);
+        isProcessingComplete = true;
+        window.location.href = "{% url 'dashboard' %}?error=" + encodeURIComponent("Connection error during processing. Please try again.");
+      });
+  }, 3000);
+
+  // Initial poll after 1 second
+  setTimeout(function() {
+    if (!isProcessingComplete && pollCount === 0) {
+      pollCount = 1;
+      fetch("{% url 'loading_page' paper.id %}", { method: "HEAD" })
+        .then(response => {
+          if (response.redirected) {
+            clearInterval(pollInterval);
+            isProcessingComplete = true;
+            window.location.href = response.url;
+          }
+        })
+        .catch(error => console.error('Initial poll error:', error));
+    }
+  }, 1000);
+</script>
+
+<style>
+  /* Match dashboard background color */
+  body {
+    background-color: #eef !important;
+    overflow: hidden; /* Prevent scrolling during loading */
+  }
+
+  .loading-content {
+    position: relative;
+    z-index: 1001;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .spinner {
+    margin: 30px auto;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #1E3A8A;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-info {
+    margin-top: 20px;
+    color: #666;
+  }
+
+  /* Lock all navigation elements */
+  nav a, 
+  .navbar a, 
+  header a,
+  .nav-link,
+  [href*="dashboard"],
+  [href*="viewer"],
+  [href*="settings"],
+  .nav-item a,
+  .navbar-nav a {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    color: #999 !important;
+  }
+  
+  /* Disable any buttons that might navigate */
+  button[onclick*="location"],
+  button[onclick*="href"],
+  .btn[onclick*="location"],
+  .btn[onclick*="href"],
+  form button[type="submit"],
+  input[type="submit"] {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Disable all links except anchors */
+  a:not([href^="#"]):not([href=""]) {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+  }
+  
+  /* Add a subtle loading overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(238, 238, 255, 0.8); /* Semi-transparent overlay matching bg */
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  /* Show loading cursor globally */
+  * {
+    cursor: wait !important;
+  }
+
+  /* Except for the loading content area */
+  .loading-content,
+  .loading-content * {
+    cursor: default !important;
+  }
+
+  /* Style for better visual hierarchy */
+  .loading-content h2 {
+    color: #1E3A8A;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+
+  .loading-content p {
+    color: #555;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .loading-content {
+      margin: 20px;
+      padding: 1.5rem;
+    }
+    
+    .loading-content h2 {
+      font-size: 1.3rem;
+    }
+  }
+
+  /* Prevent text selection during loading */
+  body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .loading-content {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+</style>
+{% endblock %}

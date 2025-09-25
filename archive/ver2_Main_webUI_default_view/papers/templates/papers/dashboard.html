@@ -1,0 +1,55 @@
+{% extends "papers/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="upload-header" style="text-align: left; margin-bottom: 20px;">
+    <h2>Upload</h2>
+    <p>Please upload the paper you would like to obtain citations for. The system will recommend the most relevant citations based on the content provided, with a breakdown of citations per relevant paragraphs.</p>
+    <p><strong>Note:</strong> These suggested citations are recommendations only. Please review and verify them for accuracy before using them in your work.</p>
+</div>
+
+<!-- Centered Upload Box -->
+<div class="upload-container" style="text-align: center; margin-bottom: 30px;">
+    <form method="post" enctype="multipart/form-data" style="display: inline-block; text-align: left;">
+        {% csrf_token %}
+        {{ form.file }}
+        <button class="search-button" type="submit" name="upload_file">Upload</button>
+    </form>
+</div>
+
+{% if papers %}
+<div class="export-section">
+    <h2>Uploaded Papers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Uploaded At</th>
+                <th>View</th>
+                <th>Export Citation</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for paper in papers %}
+            <tr {% if paper.id == last_clicked_id %} style="background-color: #eef;" {% endif %}>
+                <td>{{ paper.file.name }}</td>
+                <td>{{ paper.uploaded_at }}</td>
+                <td><a href="{% url 'viewer' paper.id %}">View</a></td>
+                <td>
+                    <form method="get" action="{% url 'viewer' paper.id %}">
+                        <button type="submit" name="export" value="{{ settings.export_type|default:'csv' }}">
+                            {{ settings.export_type|upper|default:'CSV' }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "papers/base.html" %}
+{% block content %}
+<h1>Settings</h1>
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        {{ form.citation_style.label_tag }}<br>
+        {{ form.citation_style }}
+    </p>
+
+    <p>
+        {{ form.export_type.label_tag }}<br>
+        {{ form.export_type }}
+    </p>
+
+    <button type="submit">Save Settings</button>
+</form>
+{% endblock %}

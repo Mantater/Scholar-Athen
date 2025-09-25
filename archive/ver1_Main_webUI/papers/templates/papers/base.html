@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholar Athen</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<script>
+function showError(message) {
+    document.getElementById("errorMessage").innerText = message;
+    document.getElementById("errorModal").style.display = "flex";
+}
+function closeModal() {
+    document.getElementById("errorModal").style.display = "none";
+}
+</script>
+
+<body>
+
+<header class="header-band">
+    <h1 class="header-title">Scholar Athen</h1>
+    <nav class="tabs">
+      <!-- Search tab first -->
+      <a href="{% url 'search:index' %}" class="tab-link">Search</a>
+      <a href="{% url 'dashboard' %}" class="tab-link">Dashboard</a>
+      <a href="#" class="tab-link">View</a>
+      <a href="{% url 'settings' %}" class="tab-link">Settings</a>
+    </nav>
+</header>
+
+<main class="content">
+    {% block content %}
+    {% endblock %}
+</main>
+
+</body>
+</html>

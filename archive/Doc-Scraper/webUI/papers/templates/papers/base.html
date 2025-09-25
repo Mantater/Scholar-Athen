@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholar Athen</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="header-band">
+    <h1 class="header-title">Scholar Athen</h1>
+    <nav class="tabs">
+      <a href="{% url 'upload' %}" class="tab-link">Upload</a>
+      <a href="#" class="tab-link">Export</a>
+      <a href="{% url 'settings' %}" class="tab-link">⚙️ Settings</a>
+    </nav>
+</header>
+
+<main class="content">
+    {% block content %}
+    {% endblock %}
+</main>
+
+</body>
+</html>

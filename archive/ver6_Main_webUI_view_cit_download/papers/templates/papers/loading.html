@@ -1,0 +1,36 @@
+{% extends "papers/base.html" %}
+{% block content %}
+<div style="text-align: center; margin-top: 50px;">
+  <h2>Processing "{{ paper.file.name|cut:"uploads/" }}"...</h2>
+  <p>Please wait while we generate citations.</p>
+  <div class="spinner"></div>
+</div>
+
+<script>
+  // Poll every 3 seconds to check if citations are ready
+  setInterval(function() {
+    fetch("{% url 'viewer_detail' paper.id %}", { method: "HEAD" })
+      .then(response => {
+        if (response.status === 200) {
+          window.location.href = "{% url 'viewer_detail' paper.id %}";
+        }
+      });
+  }, 3000);
+</script>
+
+<style>
+  .spinner {
+    margin: 20px auto;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
